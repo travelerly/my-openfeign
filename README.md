@@ -65,7 +65,8 @@ class FeignClientSpecification implements NamedContextFactory.Specification {
 
 	private Class<?>[] configuration;
     
-    ……
+    ……  
+}
 ```
 
 
@@ -100,8 +101,8 @@ public class FeignContext extends NamedContextFactory<FeignClientSpecification> 
 	public FeignContext() {
 		super(FeignClientsConfiguration.class, "feign", "feign.client.name");
 	}
-    
     ……
+}
 ```
 
 其父类中包含两个很重要的集合：
@@ -121,6 +122,7 @@ public abstract class NamedContextFactory<C extends NamedContextFactory.Specific
     private Map<String, C> configurations = new ConcurrentHashMap();
     
     ……
+}
 ```
 
 
