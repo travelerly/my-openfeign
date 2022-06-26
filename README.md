@@ -269,7 +269,7 @@ FeignBlockingLoadBalancerClient.execute(Request request, Request.Options options
 
 ### RoundRobinRule
 
-轮询策略。Ribbon 默认采用的策略。若经过一轮轮询没有找到可用的 provider，其最多 轮询 10 轮（代码中写死的，不能修改）。若还未找到，则返回 null。
+轮询策略。Ribbon 默认采用的策略。若经过一轮轮询没有找到可用的 provider，其最多轮询 10 次（代码中写死的，不能修改）。若还未找到，则返回 null。
 
 ```java
 // 轮询算法
@@ -302,19 +302,19 @@ protected int chooseRandomInt(int serverCount) {
 
 ### RetryRule
 
-重试策略。先按照 RoundRobinRule 策略获取 server，若获取失败，则在指定的时限内重 试。默认的时限为 500 毫秒。
+重试策略。先按照轮询算法获取 provider，若获取失败，则在指定的时限内重 试。默认的时限为 500 毫秒。
 
 
 
 ### BestAvailableRule
 
-最可用策略。选择并发量最小的 provider，即连接的消费者数量最少的 provider。其会 遍历服务列表中的每一个 provider，选择当前连接数量 minimalConcurrentConnections 最小 的 provider。
+最可用策略。选择并发量最小的 provider，即连接的消费者数量最少的 provider。其会遍历服务列表中的每一个 provider，选择当前连接数量 minimalConcurrentConnections 最小 的 provider。
 
 
 
 ### AvailabilityFilteringRule
 
-可用过滤算法。该算法规则是：过滤掉处于熔断状态的 server 与已经超过连接极限的 server，对剩余 server 采用轮询策略。
+可用过滤算法。该算法规则是：过滤掉处于熔断状态的 provider 与已经超过连接极限的 provider，对剩余 provider 采用轮询策略。
 
 
 
