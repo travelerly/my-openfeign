@@ -89,7 +89,7 @@ class FeignClientFactoryBean
 		Logger logger = loggerFactory.create(type);
 
 		// @formatter:off
-		// 从当前 FeignClient 对应的 Spring 子容器 context 中获取指定类型的实例
+		// 从当前 FeignClient 对应的 Spring 子容器 context 中获取 Feign.Builder 的实例
 		Feign.Builder builder = get(context, Feign.Builder.class)
 				// required values
 				.logger(logger)

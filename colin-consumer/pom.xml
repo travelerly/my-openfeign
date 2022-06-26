@@ -31,6 +31,12 @@
 			<version>2.2.5.RELEASE</version>
 		</dependency>
 
+		<!--Spring Cloud LoadBalancer，使用时要禁用掉 ribbon-->
+		<!--<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-loadbalancer</artifactId>
+		</dependency>-->
+
 		<!--actuator 依赖-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

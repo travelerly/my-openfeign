@@ -167,7 +167,7 @@ class FeignClientsRegistrar
 
 		if (defaultAttrs != null && defaultAttrs.containsKey("defaultConfiguration")) {
 			String name;
-			// 判断被当前注解标注的类是否为闭合类
+			// 判断被当前注解标注的类是否为闭合类（内部类）
 			if (metadata.hasEnclosingClass()) {
 				name = "default." + metadata.getEnclosingClassName();
 			}
@@ -201,13 +201,16 @@ class FeignClientsRegistrar
 		final Class<?>[] clients = attrs == null ? null
 				: (Class<?>[]) attrs.get("clients");
 		if (clients == null || clients.length == 0) {
-			// 若 "clients" 属性为空，则启动类路径扫描
-			// 为扫描器添加一个过滤器（上面已经定义了）
+			/**
+			 * 若 "clients" 属性为空，则启动类路径扫描
+			 * 为扫描器添加一个过滤器（上面已经定义的，扫描 @FeignClient 注解的过滤器）
+			 */
 			scanner.addIncludeFilter(annotationTypeFilter);
 			// 获取 @EnableFeignClients 注解中所有指定的基本包
 			basePackages = getBasePackages(metadata);
 		}
-		else { // 指定了 "clients" 属性值
+		else {
+			// 指定了 "clients" 属性值
 			final Set<String> clientClasses = new HashSet<>();
 			basePackages = new HashSet<>();
 			for (Class<?> clazz : clients) {
@@ -230,9 +233,9 @@ class FeignClientsRegistrar
 			// 扫描并获得 "候选组件" 集合（所有 Feign 接口都在其中）
 			Set<BeanDefinition> candidateComponents = scanner
 					.findCandidateComponents(basePackage);
-			// 遍历 "候选组件" 集合
+			// 遍历所有 "候选组件" 集合
 			for (BeanDefinition candidateComponent : candidateComponents) {
-				// 只处理 Feign 接口组件
+				// 只处理 Feign 接口组件，即 @FeignClient 组件
 				if (candidateComponent instanceof AnnotatedBeanDefinition) {
 					// verify annotated class is an interface
 					AnnotatedBeanDefinition beanDefinition = (AnnotatedBeanDefinition) candidateComponent;
@@ -284,6 +287,7 @@ class FeignClientsRegistrar
 		definition.setAutowireMode(AbstractBeanDefinition.AUTOWIRE_BY_TYPE);
 
 		String alias = contextId + "FeignClient";
+
 		// 获取 FeignClientFactoryBean 的 BeanDefinition（Bean 定义信息）
 		AbstractBeanDefinition beanDefinition = definition.getBeanDefinition();
 		beanDefinition.setAttribute(FactoryBean.OBJECT_TYPE_ATTRIBUTE, className);
@@ -458,8 +462,10 @@ class FeignClientsRegistrar
 		builder.addConstructorArgValue(name);
 		builder.addConstructorArgValue(configuration);
 
-		// 注册 BeanDefinition 实例（builder.getBeanDefinition()：获取到构建的 BeanDefinition 实例）
-		// 注册到 spring 的 beanDefinitionMap 中
+		/**
+		 * 使用 BeanDefinitionRegistry 将这个 BeanDefinition 实例注册到 spring 的 beanDefinitionMap 中
+		 * builder.getBeanDefinition()：获取到 BeanDefinition 实例
+		 */
 		registry.registerBeanDefinition(
 				name + "." + FeignClientSpecification.class.getSimpleName(),
 				builder.getBeanDefinition());

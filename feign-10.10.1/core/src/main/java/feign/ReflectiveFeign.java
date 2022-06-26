@@ -67,6 +67,7 @@ public class ReflectiveFeign extends Feign {
       }
     }
     InvocationHandler handler = factory.create(target, methodToHandler);
+    // 生成代理，feign 接口的动态代理类
     T proxy = (T) Proxy.newProxyInstance(target.type().getClassLoader(),
         new Class<?>[] {target.type()}, handler);
 
@@ -102,7 +103,11 @@ public class ReflectiveFeign extends Feign {
       } else if ("toString".equals(method.getName())) {
         return toString();
       }
-
+      /**
+       * 以上是排除 Object 的方法
+       * 真正的目标方法的由方法处理器调用 invoke() 执行，默认方法处理器：DefaultMethodHandler，普通接口方法处理器：SynchronousMethodHandler
+       * dispatch 就是 <Method, MethodHandler> methodToHandler，key 为方法，value 为方法的处理器
+       */
       return dispatch.get(method).invoke(args);
     }
 

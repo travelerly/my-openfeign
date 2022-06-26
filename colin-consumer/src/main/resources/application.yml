@@ -8,3 +8,7 @@ spring:
     nacos:
       discovery:
         server-addr: localhost:8848
+#    # 使用 SpringCloudLoadBalancer 时，需要禁用 ribbon
+#    loadbalancer:
+#      ribbon:
+#        enabled: false

@@ -16,15 +16,12 @@
 
 package org.springframework.cloud.openfeign;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 import org.springframework.context.annotation.Import;
 
+import java.lang.annotation.*;
+
 /**
+ * 用于扫描 @FeignClient 客户端
  * Scans for interfaces that declare they are feign clients (via
  * {@link org.springframework.cloud.openfeign.FeignClient} <code>@FeignClient</code>).
  * Configures component scanning directives for use with
