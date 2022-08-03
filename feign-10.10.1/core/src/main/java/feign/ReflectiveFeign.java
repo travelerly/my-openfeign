@@ -67,7 +67,7 @@ public class ReflectiveFeign extends Feign {
       }
     }
     InvocationHandler handler = factory.create(target, methodToHandler);
-    // 生成代理，feign 接口的动态代理类
+    // 生成代理，feign 接口的动态代理类，即 FeignClient
     T proxy = (T) Proxy.newProxyInstance(target.type().getClassLoader(),
         new Class<?>[] {target.type()}, handler);
 

@@ -136,6 +136,9 @@ class FeignClientsRegistrar
 
 	/**
 	 * FeignClient 完成配置注册
+	 * FeignClientsRegistrar：通过注解 @EnableFeignClients 导入（@Import）的
+	 * 工厂刷新时，在执行工厂增强方法 invokeBeanFactoryPostProcessors() 中会调用此方法进行注册
+	 *
 	 * @param metadata : 包含 @EnableFeignClients 与 @SpringBootApplication 两个注解的元数据
 	 * @param registry
 	 */
@@ -149,7 +152,7 @@ class FeignClientsRegistrar
 		/**
 		 * 1、扫描所有标注了 @FeignClient 注解的接口，即扫描所有 Feign 接口
 		 * 2、将每个 @FeignClient 注解的 configuration 属性注册到 spring 的 beanDefinitionMap 中
-		 * 3、根据 @FeignClient 注解元数据生成 FeignClientFactoryBean 的 BeanDefinition，并将其注册到 spring 的 beanDefinitionMap 中
+		 * 3、根据 @FeignClient 注解元数据生成 FeignClient 的 BeanDefinition，并注册到 beanDefinitionMap 中
 		 */
 		registerFeignClients(metadata, registry);
 	}
@@ -191,21 +194,26 @@ class FeignClientsRegistrar
 		scanner.setResourceLoader(this.resourceLoader);
 
 		Set<String> basePackages;
+
 		// 获取 @EnableFeignClients 注解的属性元数据
 		Map<String, Object> attrs = metadata
 				.getAnnotationAttributes(EnableFeignClients.class.getName());
+
 		// 定义一个扫描标注了 @FeignClient 注解的接口的过滤器
 		AnnotationTypeFilter annotationTypeFilter = new AnnotationTypeFilter(
 				FeignClient.class);
+
 		// 获取 "clients" 属性值
 		final Class<?>[] clients = attrs == null ? null
 				: (Class<?>[]) attrs.get("clients");
+
 		if (clients == null || clients.length == 0) {
 			/**
 			 * 若 "clients" 属性为空，则启动类路径扫描
 			 * 为扫描器添加一个过滤器（上面已经定义的，扫描 @FeignClient 注解的过滤器）
 			 */
 			scanner.addIncludeFilter(annotationTypeFilter);
+
 			// 获取 @EnableFeignClients 注解中所有指定的基本包
 			basePackages = getBasePackages(metadata);
 		}
@@ -233,6 +241,7 @@ class FeignClientsRegistrar
 			// 扫描并获得 "候选组件" 集合（所有 Feign 接口都在其中）
 			Set<BeanDefinition> candidateComponents = scanner
 					.findCandidateComponents(basePackage);
+
 			// 遍历所有 "候选组件" 集合
 			for (BeanDefinition candidateComponent : candidateComponents) {
 				// 只处理 Feign 接口组件，即 @FeignClient 组件
@@ -250,12 +259,17 @@ class FeignClientsRegistrar
 							.getAnnotationAttributes(
 									FeignClient.class.getCanonicalName());
 
-					// 获取 Feign 名称
+					// 获取 FeignClient 的名称
 					String name = getClientName(attributes);
+
 					// 将当前遍历到的 Feign 接口的 "configuration" 属性注册到缓存 map 中（注册到 spring 的 beanDefinitionMap 中）
 					registerClientConfiguration(registry, name,
 							attributes.get("configuration"));
-					// 将 FeignClientFactoryBean 的 BeanDefinition 注册到缓存 map 中（注册到 spring 的 beanDefinitionMap 中）
+
+					/**
+					 * 将 FeignClient 的 BeanDefinition 注册进 BeanDefinitionMap 中
+					 * FeignClient 是一个 FactoryBean
+					 */
 					registerFeignClient(registry, annotationMetadata, attributes);
 				}	// end-if
 			}	// end-for
@@ -301,9 +315,11 @@ class FeignClientsRegistrar
 		if (StringUtils.hasText(qualifier)) {
 			alias = qualifier;
 		}
+
 		// 生成 BeanDefinition 的 holder（持有者），通过这个 holder 可以获取到这个 BeanDefinition
 		BeanDefinitionHolder holder = new BeanDefinitionHolder(beanDefinition, className,
 				new String[] { alias });
+
 		// 注册到 spring 的 beanDefinitionMap 中
 		BeanDefinitionReaderUtils.registerBeanDefinition(holder, registry);
 	}

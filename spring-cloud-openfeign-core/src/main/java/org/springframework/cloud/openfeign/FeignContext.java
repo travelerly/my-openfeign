@@ -16,14 +16,16 @@
 
 package org.springframework.cloud.openfeign;
 
-import java.util.Map;
-
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.cloud.context.named.NamedContextFactory;
 import org.springframework.lang.Nullable;
 
+import java.util.Map;
+
 /**
+ * FeignContext 是一个为 Feign Client 创建所准备的上下文对象。
+ *
  * A factory that creates instances of feign classes. It creates a Spring
  * ApplicationContext per client name, and extracts the beans that it needs from there.
  *

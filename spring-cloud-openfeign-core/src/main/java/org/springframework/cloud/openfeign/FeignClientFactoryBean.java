@@ -319,7 +319,7 @@ class FeignClientFactoryBean
 	<T> T getTarget() {
 		// 从 Spring 容器中获取到 FeignContext（即 FeignClient 对应的 Spring 子容器）
 		FeignContext context = applicationContext.getBean(FeignContext.class);
-		// 从 Spring 子容器中获取相应实例
+		// 从 Spring 子容器中获取 Feign.Builder 实例
 		Feign.Builder builder = feign(context);
 
 		// 若 url 属性为空，则说明使用负载均衡方式调用提供者

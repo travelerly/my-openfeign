@@ -4,7 +4,7 @@
 
 ### OpenFeign 简介
 
-声明式 REST 客户端：Feign 通过使用 JAX-RS 或 SpringMVC 注解的装饰方式，生成接口的 动态实现。
+声明式 REST 客户端：Feign 通过使用 JAX-RS 或 SpringMVC 注解的装饰方式，生成接口的动态代理。
 
 
 
@@ -12,7 +12,7 @@
 
 Feign，假的，伪装的
 
-OpenFeign 可以将提供者提供的 Restful 服务伪装为接口进行消费，消费者只需使用“feign 接口 + 注解”的方式即可直接调用提供者提供的 Restful 服务，而无需再使用 RestTemplate。
+OpenFeign 可以将提供者提供的 Restful 服务伪装为接口进行消费，消费者只需使用 `feign 接口 + 注解` 的方式即可直接调用提供者提供的 Restful 服务，而无需再使用 RestTemplate。
 
 **注意，OpenFeign 只与消费者有关，与提供者没有任何关系。**
 
@@ -22,7 +22,7 @@ OpenFeign 可以将提供者提供的 Restful 服务伪装为接口进行消费�
 
 OpenFeign 默认使用 Ribbon 作为负载均衡组件。 OpenFeign 直接内置了 Ribbon。即在导入 OpenFeign 依赖后，无需再专门导入 Ribbon 依赖了。
 
-OpenFeign 也是运行在消费者端的，使用 Ribbon 进行负载均衡，所以 OpenFeign 直接内 置了 Ribbon。即在导入 OpenFeign 依赖后，无需再专门导入 Ribbon 依赖了。
+OpenFeign 也是运行在消费者端的，使用 Ribbon 进行负载均衡，所以 OpenFeign 直接内置了 Ribbon。即在导入 OpenFeign 依赖后，无需再专门导入 Ribbon 依赖了。
 
 #### 消费者客户端技术选型
 
@@ -40,23 +40,23 @@ OpenFeign 也是运行在消费者端的，使用 Ribbon 进行负载均衡，�
 
 #### @EnableFeignClients
 
-在 SpringBoot 中存在大量的 @EnableXxx 这种注解。它们的作用是，开启某项功能。其 实它们本质上是为了导入某个类来完成某项功能。所以这个注解一般会组合一个 @Import 注解用于导入类。导入的类一般有三种：
+在 SpringBoot 中存在大量的 @EnableXxx 这种注解。它们的作用是，开启某项功能。其实它们本质上是为了导入某个类来完成某项功能。所以这个注解一般会组合一个 @Import 注解用于导入类。导入的类一般有三种：
 
-- 配置类：一般以 Configuration 结尾，完成自动配置
-- 选择器：一般以 Selector 结尾，完成自动选择
-- 注册器：一般以 Registrar 结尾，完成自动注册
+- **配置类**：一般以 Configuration 结尾，完成自动配置
+- **选择器**：一般以 Selector 结尾，完成自动选择
+- **注册器**：一般以 Registrar 结尾，完成自动注册
 
 
 
 #### @FeignClient 接口
 
-1. Feign 接口名无需与业务接口名称相同，叫什么都可以，但一般起名与业务接口名相同
-2. 方法签名要与业务接口的相同，但具体的方法名称不一定非要与业务方法名称相同，叫什么都可以。但一般起名与业务方法名相同
-3. 必须要有 @FeignClient 注解
-4. @FeignClient(value = "colin-provider")，vlaue 和 name 是同义词，该属性必须被指定，是可选协议前缀，会自动在微服务名称前面添加 `http://`。
+1. Feign 接口名无需与业务接口名称相同，叫什么都可以，但一般起名与业务接口名相同；
+2. 方法签名要与业务接口的相同，但具体的方法名称不一定非要与业务方法名称相同，叫什么都可以，但一般起名与业务方法名相同；
+3. 必须要有 @FeignClient 注解；
+4. `@FeignClient(value = "colin-provider")`，vlaue 和 name 是同义词，该属性必须被指定，是可选协议前缀，会自动在微服务名称前面添加 `http://`。
 5. qualifier 属性，在注入时，指定目标类的名称，也即 `byName`
 6. url 属性，采用直连方式，不会负载均衡
-7. path，方法级别的前缀映射，作用相当于 @RequestMapping("/provider/depart") 中配置的内容
+7. path，方法级别的前缀映射，作用相当于 `@RequestMapping("/provider/depart")` 中配置的内容
 
 
 
@@ -138,7 +138,10 @@ public abstract class NamedContextFactory<C extends NamedContextFactory.Specific
 #### 完成配置注册
 
 ```java
-// FeignClientsRegistrar
+/**
+ * FeignClientsRegistrar：通过注解 @EnableFeignClients 导入（@Import）的
+ * 工厂刷新时，在执行工厂增强方法 invokeBeanFactoryPostProcessors() 中会调用此方法进行注册
+ */
 public void registerBeanDefinitions(AnnotationMetadata metadata,
                                     BeanDefinitionRegistry registry) {
 
@@ -148,8 +151,7 @@ public void registerBeanDefinitions(AnnotationMetadata metadata,
     /**
 	 * 1、扫描所有标注了 @FeignClient 注解的接口，即扫描所有 Feign 接口
 	 * 2、将每个 @FeignClient 注解的 configuration 属性注册到 spring 的 beanDefinitionMap 中
-	 * 3、根据 @FeignClient 注解元数据生成 FeignClientFactoryBean 的 BeanDefinition，
-	 *    并将其注册到 spring 的 beanDefinitionMap 中
+	 * 3、根据 @FeignClient 注解元数据生成 FeignClient 的 BeanDefinition，并注册到 beanDefinitionMap 中
 	 */
     registerFeignClients(metadata, registry);
 }

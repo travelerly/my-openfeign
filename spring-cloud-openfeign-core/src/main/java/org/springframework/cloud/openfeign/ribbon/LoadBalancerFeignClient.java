@@ -78,7 +78,8 @@ public class LoadBalancerFeignClient implements Client {
 			FeignLoadBalancer.RibbonRequest ribbonRequest = new FeignLoadBalancer.RibbonRequest(
 					this.delegate, request, uriWithoutHost);
 
-			IClientConfig requestConfig = getClientConfig(options, clientName);// 负载均衡选择主机执行目标方法
+			// 负载均衡选择主机执行目标方法
+			IClientConfig requestConfig = getClientConfig(options, clientName);
 			return lbClient(clientName)
 					.executeWithLoadBalancer(ribbonRequest, requestConfig).toResponse();
 		}
