@@ -16,33 +16,22 @@
 
 package org.springframework.cloud.openfeign.ribbon;
 
-import java.io.IOException;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
-import com.netflix.client.AbstractLoadBalancerAwareClient;
-import com.netflix.client.ClientException;
-import com.netflix.client.ClientRequest;
-import com.netflix.client.IResponse;
-import com.netflix.client.RequestSpecificRetryHandler;
-import com.netflix.client.RetryHandler;
+import com.netflix.client.*;
 import com.netflix.client.config.IClientConfig;
 import com.netflix.loadbalancer.ILoadBalancer;
 import com.netflix.loadbalancer.Server;
 import feign.Client;
 import feign.Request;
 import feign.Response;
-
 import org.springframework.cloud.netflix.ribbon.RibbonProperties;
 import org.springframework.cloud.netflix.ribbon.ServerIntrospector;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpRequest;
+
+import java.io.IOException;
+import java.net.URI;
+import java.util.*;
 
 import static org.springframework.cloud.netflix.ribbon.RibbonUtils.updateToSecureConnectionIfNeeded;
 
@@ -90,6 +79,8 @@ public class FeignLoadBalancer extends
 		else {
 			options = new Request.Options(this.connectTimeout, this.readTimeout);
 		}
+
+		// ApacheHttpClient#execute()：使用 Http 客户端发送请求
 		Response response = request.client().execute(request.toRequest(), options);
 		return new RibbonResponse(request.getUri(), response);
 	}

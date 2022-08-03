@@ -290,10 +290,14 @@ class FeignClientFactoryBean
 
 	protected <T> T loadBalance(Feign.Builder builder, FeignContext context,
 			HardCodedTarget<T> target) {
+
+		// 获取负载均衡客户端
 		Client client = getOptional(context, Client.class);
+
 		if (client != null) {
 			builder.client(client);
 			Targeter targeter = get(context, Targeter.class);
+			// 获取代理对象
 			return targeter.target(this, builder, context, target);
 		}
 
@@ -332,7 +336,7 @@ class FeignClientFactoryBean
 			}
 			url += cleanPath();
 
-			// 负载均衡调用
+			// 创建代理对象
 			return (T) loadBalance(builder, context,
 					new HardCodedTarget<>(type, name, url));
 		}

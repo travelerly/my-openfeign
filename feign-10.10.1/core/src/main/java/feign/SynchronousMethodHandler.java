@@ -118,7 +118,7 @@ final class SynchronousMethodHandler implements MethodHandler {
     Response response;
     long start = System.nanoTime();
     try {
-      // client：具体负载均衡客户端，例如：ribbon、springcloudloadbalancer
+      // client：具体负载均衡客户端，例如：ribbon、springcloudloadbalancer，execute()：执行请求
       response = client.execute(request, options);
       // ensure the request is set. TODO: remove in Feign 12
       response = response.toBuilder()

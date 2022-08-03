@@ -152,6 +152,7 @@ public void registerBeanDefinitions(AnnotationMetadata metadata,
 	 * 1、扫描所有标注了 @FeignClient 注解的接口，即扫描所有 Feign 接口
 	 * 2、将每个 @FeignClient 注解的 configuration 属性注册到 spring 的 beanDefinitionMap 中
 	 * 3、根据 @FeignClient 注解元数据生成 FeignClient 的 BeanDefinition，并注册到 beanDefinitionMap 中
+	 *    FeignClient 的类型是 FeignClientFactoryBean，是一个工厂 Bean，其实例化时通过工厂 bean 的 getObject() 方法完成的
 	 */
     registerFeignClients(metadata, registry);
 }
@@ -162,7 +163,10 @@ public void registerBeanDefinitions(AnnotationMetadata metadata,
 #### 完成自动配置
 
 ```java
-// FeignAutoConfiguration
+/**
+ * spring-cloud-fegin-core 模块的 spring.factories 文件中的自动配置类 FeignAutoConfiguration
+ * 会给容器中配置(@Bean) FeignContext。
+ */
 public FeignContext feignContext() {
 	FeignContext context = new FeignContext();
 	/**
@@ -182,7 +186,9 @@ public FeignContext feignContext() {
 #### 生成 Feign Client
 
 ```java
-// FeignClientFactoryBean.getObject();
+/**
+ * Feign Client 是一个 FeignClientFactoryBean 类型的工厂 Bean，其实例化是通过工厂 Bean 的 getObject() 方法完成的
+ */
 public Object getObject() throws Exception {
 	return getTarget();
 }
@@ -190,7 +196,7 @@ public Object getObject() throws Exception {
 <T> T getTarget() {
 	// 从 Spring 容器中获取到 FeignContext（即 FeignClient 对应的 Spring 子容器）
 	FeignContext context = applicationContext.getBean(FeignContext.class);
-	// 从 Spring 子容器中获取相应实例
+	// 从 Spring 子容器中获取 Feign.Builder 实例
 	Feign.Builder builder = feign(context);
 
 	// 若 url 属性为空，则说明使用负载均衡方式调用提供者
@@ -203,7 +209,7 @@ public Object getObject() throws Exception {
 		}
 		url += cleanPath();
 
-		// 负载均衡调用
+		// 创建代理对象，最终由 ReflectiveFeign#newInstance() 创建出代理对象
 		return (T) loadBalance(builder, context,
 				new HardCodedTarget<>(type, name, url));
 	}
@@ -239,7 +245,7 @@ public Object getObject() throws Exception {
 ### 发出网络请求
 
 ```java
-// 发起请求后，代理类调用
+// 发起请求后，代理类介入增强
 ReflectiveFeign.invoke(Object proxy, Method method, Object[] args);
 ```
 

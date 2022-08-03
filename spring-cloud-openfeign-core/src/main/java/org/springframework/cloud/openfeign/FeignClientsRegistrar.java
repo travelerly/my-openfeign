@@ -285,6 +285,8 @@ class FeignClientsRegistrar
 	private void registerFeignClient(BeanDefinitionRegistry registry,
 			AnnotationMetadata annotationMetadata, Map<String, Object> attributes) {
 		String className = annotationMetadata.getClassName();
+
+		// 指定类型 FeignClientFactoryBean，是工厂 Bean
 		BeanDefinitionBuilder definition = BeanDefinitionBuilder
 				.genericBeanDefinition(FeignClientFactoryBean.class);
 		validate(attributes);
@@ -303,7 +305,13 @@ class FeignClientsRegistrar
 		String alias = contextId + "FeignClient";
 
 		// 获取 FeignClientFactoryBean 的 BeanDefinition（Bean 定义信息）
+		/**
+		 * 获取 FeignClientFactoryBean 的 BeanDefinition（Bean 定义信息）
+		 * FeignClient 的类型是 FeignClientFactoryBean，是一个工厂 Bean
+		 * 实例化时，是通过工厂的 getObject() 方法创建的，最终会创建动态代理
+		 */
 		AbstractBeanDefinition beanDefinition = definition.getBeanDefinition();
+		// 设置为工厂 Bean
 		beanDefinition.setAttribute(FactoryBean.OBJECT_TYPE_ATTRIBUTE, className);
 
 		// has a default, won't be null
