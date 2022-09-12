@@ -1,5 +1,8 @@
 package com.consumer.conf;
 
+import com.alibaba.cloud.nacos.ribbon.NacosRule;
+import com.netflix.loadbalancer.IRule;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
@@ -9,9 +12,10 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class DepartConfig {
 
-    /*// 指定负载均衡策略
+    // 指定负载均衡策略
     @Bean
     public IRule loadBalancer(){
-        return new RandomRule();
-    }*/
+        /*return new RandomRule();*/
+        return new NacosRule();
+    }
 }
